@@ -20,18 +20,27 @@ func NewBptree() *bptree {
 }
 
 func (bpt *bptree) add(key int, value interface{}) {
-	l := bpt.findLeaf(key)
-	l.add(key, value)
+	l := bpt.findLeaf(bpt.root, key)
+	ok := l.add(key, value)
+	if !ok {
+		center, newLeaf := l.divide()
+		b := NewBranch(center, l, newLeaf)
+		newLeaf.add(key, value)
+		bpt.root = b
+	}
 }
 
 func (bpt *bptree) find(key int) (interface{}, bool) {
-	l := bpt.findLeaf(key)
+	l := bpt.findLeaf(bpt.root, key)
 	return l.find(key)
 }
 
-func (bpt *bptree) findLeaf(key int) *leaf {
-	if n, ok := bpt.root.(*leaf); ok {
+func (bpt *bptree) findLeaf(n node, key int) *leaf {
+	switch n := n.(type) {
+	case *leaf:
 		return n
+	case *branch:
+		return bpt.findLeaf(n.next(key), key)
 	}
 	return nil
 }
