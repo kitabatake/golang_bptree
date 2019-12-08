@@ -16,7 +16,12 @@ func (l *leaf) add (key int, value interface{}) {
 	ele := leafElement{key, value}
 	for e := l.li.Front(); e != nil; e = e.Next() {
 		_ele := e.Value.(leafElement)
-		if ele.key < _ele.key {
+
+		if _ele.key == ele.key {
+			e.Value = ele
+			return
+		}
+		if _ele.key > ele.key {
 			l.li.InsertBefore(ele, e)
 			return
 		}
