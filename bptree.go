@@ -1,5 +1,8 @@
 package bptree
 
+var (
+	m = 3
+)
 
 type node interface {
 
@@ -23,12 +26,7 @@ func (bpt *bptree) add(key int, value interface{}) {
 
 func (bpt *bptree) find(key int) (interface{}, bool) {
 	l := bpt.findLeaf(key)
-	for i, k := range l.keys {
-		if k == key {
-			return l.values[i], true
-		}
-	}
-	return nil, false
+	return l.find(key)
 }
 
 func (bpt *bptree) findLeaf(key int) *leaf {
