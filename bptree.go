@@ -5,7 +5,6 @@ var (
 )
 
 type node interface {
-
 }
 
 type bptree struct {
@@ -21,11 +20,10 @@ func NewBptree() *bptree {
 
 func (bpt *bptree) add(key int, value interface{}) {
 	l := bpt.findLeaf(bpt.root, key)
-	ok := l.add(key, value)
-	if !ok {
-		center, newLeaf := l.divide()
-		b := NewBranch(center, l, newLeaf)
-		newLeaf.add(key, value)
+	divided, center, newLeaf := l.add(key, value)
+	if divided {
+		b := NewBranch(center, l, newLeaf.(*leaf))
+		//fmt.Printf("divided!\n  center: %d\n  l: %s\n  n: %s\n", center, l, newLeaf)
 		bpt.root = b
 	}
 }
@@ -43,4 +41,8 @@ func (bpt *bptree) findLeaf(n node, key int) *leaf {
 		return bpt.findLeaf(n.next(key), key)
 	}
 	return nil
+}
+
+func (bpt *bptree) dump() {
+
 }
