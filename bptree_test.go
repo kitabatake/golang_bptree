@@ -40,4 +40,6 @@ func TestCommon(t *testing.T) {
 	ret, _ = bpt.find(5)
 	assert.OK(t, ret == "d")
 
+
+	bpt.dump()
 }

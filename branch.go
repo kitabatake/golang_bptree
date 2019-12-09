@@ -1,14 +1,16 @@
 package bptree
 
+import "fmt"
+
 type branch struct {
 	keys []int
-	leafs []*leaf
+	nodes []node
 }
 
 func NewBranch(center int, l, r *leaf) *branch {
 	b := branch{
 		keys:  []int{center},
-		leafs: []*leaf{l, r},
+		nodes: []node{l, r},
 	}
 	return &b
 }
@@ -16,8 +18,19 @@ func NewBranch(center int, l, r *leaf) *branch {
 func (b *branch) next(key int) node {
 	for i, k := range b.keys {
 		if key < k {
-			return b.leafs[i]
+			return b.nodes[i]
 		}
 	}
-	return b.leafs[len(b.leafs) - 1]
+	return b.nodes[len(b.nodes) - 1]
+}
+
+func (b *branch) String() string {
+	out := "["
+	for i, k := range b.keys {
+		out += fmt.Sprintf("%d", k)
+		if i < len(b.keys)-1 {
+			out += ", "
+		}
+	}
+	return out + "]"
 }

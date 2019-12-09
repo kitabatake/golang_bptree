@@ -1,5 +1,7 @@
 package bptree
 
+import "fmt"
+
 var (
 	m = 3
 )
@@ -44,5 +46,19 @@ func (bpt *bptree) findLeaf(n node, key int) *leaf {
 }
 
 func (bpt *bptree) dump() {
+	q := []node{bpt.root}
+	for len(q) != 0 {
+		tq := append([]node{}, q...)
+		q = []node{}
 
+		for _, n := range tq {
+			fmt.Printf("%s ", n)
+			if n, ok := n.(*branch); ok {
+				for _, child := range n.nodes {
+					q = append(q, child)
+				}
+			}
+		}
+		fmt.Println()
+	}
 }
