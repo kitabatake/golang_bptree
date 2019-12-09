@@ -38,8 +38,18 @@ func TestCommon(t *testing.T) {
 
 	bpt.add(5, "d")
 	ret, _ = bpt.find(5)
+	//bpt.dump()
 	assert.OK(t, ret == "d")
+}
 
-
+func TestExpansion(t *testing.T) {
+	bpt := NewBptree()
+	for i := 1; i <= 10; i++ {
+		bpt.add(i, i)
+	}
 	bpt.dump()
+	for i := 1; i <= 10; i++ {
+		ret, _ := bpt.find(i)
+		assert.OK(t, ret == i)
+	}
 }

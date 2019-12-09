@@ -21,26 +21,46 @@ func NewBptree() *bptree {
 }
 
 func (bpt *bptree) add(key int, value interface{}) {
-	l := bpt.findLeaf(bpt.root, key)
-	divided, center, newLeaf := l.add(key, value)
+	traceBranches := make([]*branch, 0)
+	l := bpt.findLeaf(bpt.root, key, &traceBranches)
+	divided, center, newNode := l.add(key, value)
+
+	// propagate to parent branches
 	if divided {
-		b := NewBranch(center, l, newLeaf.(*leaf))
-		//fmt.Printf("divided!\n  center: %d\n  l: %s\n  n: %s\n", center, l, newLeaf)
-		bpt.root = b
+		//fmt.Println(traceBranches)
+		if len(traceBranches) == 0 {
+			b := NewBranch(center, l, newNode.(*leaf))
+			bpt.root = b
+		} else {
+			branchDivided := false
+			for i := len(traceBranches)-1; i >= 0; i-- {
+				branchDivided, center, newNode = traceBranches[i].add(center, newNode)
+				if !branchDivided {
+					break
+				}
+			}
+			if branchDivided {
+				b := NewBranch(center, traceBranches[0], newNode.(*branch))
+				bpt.root = b
+			}
+		}
 	}
 }
 
 func (bpt *bptree) find(key int) (interface{}, bool) {
-	l := bpt.findLeaf(bpt.root, key)
+	l := bpt.findLeaf(bpt.root, key, nil)
 	return l.find(key)
 }
 
-func (bpt *bptree) findLeaf(n node, key int) *leaf {
+func (bpt *bptree) findLeaf(n node, key int, traceBranches *[]*branch) *leaf {
 	switch n := n.(type) {
 	case *leaf:
 		return n
 	case *branch:
-		return bpt.findLeaf(n.next(key), key)
+		if traceBranches != nil {
+			*traceBranches = append(*traceBranches, n)
+		}
+		return bpt.findLeaf(n.next(key), key, traceBranches)
 	}
 	return nil
 }
