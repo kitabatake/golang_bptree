@@ -29,7 +29,7 @@ func (b *branch) add(key int, n node) (bool, int, node) {
 	for i, k := range b.keys {
 		if k > key {
 			b.keys = append(b.keys[:i], append([]int{key}, b.keys[i:]...)...)
-			b.nodes = append(b.nodes[:i], append([]node{n}, b.nodes[i:]...)...)
+			b.nodes = append(b.nodes[:i+1], append([]node{n}, b.nodes[i+1:]...)...)
 			inserted = true
 			break
 		}

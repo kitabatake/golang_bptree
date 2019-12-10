@@ -47,8 +47,20 @@ func TestExpansion(t *testing.T) {
 	for i := 1; i <= 10; i++ {
 		bpt.add(i, i)
 	}
-	bpt.dump()
+	//bpt.dump()
 	for i := 1; i <= 10; i++ {
+		ret, _ := bpt.find(i)
+		assert.OK(t, ret == i)
+	}
+}
+
+func TestDescendingOrderExpansion(t *testing.T) {
+	bpt := NewBptree()
+	for i := 10; i >= 1; i-- {
+		bpt.add(i, i)
+	}
+	bpt.dump()
+	for i := 10; i >= 1; i-- {
 		ret, _ := bpt.find(i)
 		assert.OK(t, ret == i)
 	}

@@ -73,7 +73,7 @@ func (l *leaf) divide(newKey int, newValue interface{}) (int, *leaf) {
 	added := false
 	for e := l.li.Front(); e != nil; e = e.Next() {
 		ele := e.Value.(leafElement)
-		if ele.key > newKey {
+		if !added && ele.key > newKey {
 			keys = append(keys, newKey)
 			values = append(values, newValue)
 			added = true
