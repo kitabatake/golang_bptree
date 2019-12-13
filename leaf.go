@@ -39,7 +39,7 @@ func (l *leaf) add (key int, value interface{}) (bool, int, node) {
 		return false, 0, nil
 	}
 
-	if l.li.Len() > maxElementsCount {
+	if l.li.Len() >= maxElementsCount {
 		center, newLeaf := l.divide(key, value)
 		return true, center, newLeaf
 	}
@@ -108,11 +108,25 @@ func (l *leaf) delete(key int) {
 		ele := e.Value.(leafElement)
 		if ele.key == key {
 			l.li.Remove(e)
-			return
+			break
 		}
 	}
 }
 
+func (l *leaf) wantToMerge() bool {
+	return l.li.Len() < minElementsCount
+}
+
+func (l *leaf) merge(targetLeaf *leaf) {
+	myFirstElement := l.li.Front().Value.(leafElement)
+	targetFirstElement := targetLeaf.li.Front().Value.(leafElement)
+	if myFirstElement.key > targetFirstElement.key {
+		l.li.PushFrontList(&targetLeaf.li)
+		l.nextLeaf = targetLeaf.nextLeaf
+	} else {
+		l.li.PushBackList(&targetLeaf.li)
+	}
+}
 
 func (l *leaf) String() string {
 	out := "["

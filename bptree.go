@@ -3,7 +3,7 @@ package bptree
 import "fmt"
 
 var (
-	minElementsCount = 1
+	minElementsCount = 2
 	maxElementsCount = 4
 )
 
@@ -54,8 +54,15 @@ func (bpt *bptree) Find(key int) (interface{}, bool) {
 }
 
 func (bpt *bptree) Delete(key int) {
-	l := bpt.findLeaf(bpt.root, key, nil)
+	traceBranches := make([]*branch, 0)
+	l := bpt.findLeaf(bpt.root, key, &traceBranches)
 	l.delete(key)
+
+	if l.wantToMerge() {
+		for i := len(traceBranches)-1; i >= 0; i-- {
+			traceBranches[i].merge(l)
+		}
+	}
 }
 
 func (bpt *bptree) findLeaf(n node, key int, traceBranches *[]*branch) *leaf {

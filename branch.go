@@ -69,6 +69,27 @@ func (b *branch) divide() (int, node) {
 	return center, newBranch
 }
 
+func (b *branch) merge(n node) {
+	var deleteKeyIndex, deleteNodeIndex int
+	var targetNode node
+	for i, _n := range b.nodes {
+		if _n == n {
+			deleteNodeIndex = i
+			if i != len(b.nodes)-1 {
+				deleteKeyIndex = i
+				targetNode = b.nodes[i+1]
+			} else {
+				deleteKeyIndex = i-1
+				targetNode = b.nodes[i-1]
+			}
+		}
+	}
+
+	targetNode.(*leaf).merge(n.(*leaf)) // just corresponds to only leaf
+	b.keys = append(b.keys[:deleteKeyIndex], b.keys[deleteKeyIndex+1:]...)
+	b.nodes = append(b.nodes[:deleteNodeIndex], b.nodes[deleteNodeIndex+1:]...)
+}
+
 
 func (b *branch) String() string {
 	out := "["

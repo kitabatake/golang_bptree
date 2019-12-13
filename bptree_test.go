@@ -65,15 +65,27 @@ func TestDescendingOrderExpansion(t *testing.T) {
 	}
 }
 
-func TestDeleteLeafElement(t *testing.T) {
-	bpt := NewBptree()
-	bpt.Add(1,1)
-	bpt.Add(2,2)
-	bpt.Add(4,4)
-	bpt.Add(5,4)
+//func TestDeleteLeafElement(t *testing.T) {
+//	bpt := NewBptree()
+//	bpt.Add(1,1)
+//	bpt.Add(2,2)
+//	bpt.Add(4,4)
+//	bpt.Add(5,4)
+//
+//	bpt.Delete(4)
+//	_, ok := bpt.Find(4)
+//	assert.OK(t, ok == false)
+//}
 
-	bpt.Delete(4)
-	_, ok := bpt.Find(4)
-	assert.OK(t, ok == false)
+func TestDeleteAndMergeLeafs(t *testing.T) {
+	bpt := NewBptree()
+	for i := 8; i >= 1; i-- {
+		bpt.Add(i, i)
+	}
+
 	bpt.dump()
+	bpt.Delete(1)
+	bpt.dump()
+
+	//TODO: revers order
 }
