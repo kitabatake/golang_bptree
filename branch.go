@@ -69,7 +69,7 @@ func (b *branch) divide() (int, node) {
 	return center, newBranch
 }
 
-func (b *branch) mergeChildren(n node) {
+func (b *branch) mergeChildren(n node) node {
 	var deleteKeyIndex, deleteNodeIndex int
 	var targetNode node
 	for i, _n := range b.nodes {
@@ -92,6 +92,8 @@ func (b *branch) mergeChildren(n node) {
 	}
 	b.keys = append(b.keys[:deleteKeyIndex], b.keys[deleteKeyIndex+1:]...)
 	b.nodes = append(b.nodes[:deleteNodeIndex], b.nodes[deleteNodeIndex+1:]...)
+
+	return targetNode
 }
 
 func (b *branch) merge(center int, targetBranch *branch) {

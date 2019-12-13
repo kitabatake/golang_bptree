@@ -101,5 +101,10 @@ func TestDeleteAndMergeBranches(t *testing.T) {
 	bpt.Delete(20)
 	bpt.dump()
 
+	for i := 19; i >= 1; i-- {
+		ret, _ := bpt.Find(i)
+		assert.OK(t, ret == i)
+	}
+
 	//TODO: revers order
 }

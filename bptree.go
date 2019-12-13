@@ -58,16 +58,21 @@ func (bpt *bptree) Delete(key int) {
 	l := bpt.findLeaf(bpt.root, key, &traceBranches)
 	l.delete(key)
 
-	if l.wantToMerge() {
+	var mergedNode node
+	if l != bpt.root && l.wantToMerge() {
 		var mergeTarget node = l
 		for i := len(traceBranches)-1; i >= 0; i-- {
-			fmt.Printf("merge! %s", mergeTarget)
-			traceBranches[i].mergeChildren(mergeTarget)
+			//fmt.Printf("merge! %s\n", mergeTarget)
+			mergedNode = traceBranches[i].mergeChildren(mergeTarget)
 			if !traceBranches[i].wantToMerge() {
 				break
 			}
 			mergeTarget = traceBranches[i]
-			// check want to divide merged node
+
+			if i == 0 && len(traceBranches[i].keys) == 0 {
+				// change root is root has no elements
+				bpt.root = mergedNode
+			}
 		}
 	}
 }
