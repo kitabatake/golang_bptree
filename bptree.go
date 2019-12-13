@@ -3,7 +3,8 @@ package bptree
 import "fmt"
 
 var (
-	m = 3
+	minElementsCount = 1
+	maxElementsCount = 4
 )
 
 type node interface {

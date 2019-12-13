@@ -26,6 +26,7 @@ func (l *leaf) find(key int) (interface{}, bool) {
 }
 
 func (l *leaf) centerIndex() int {
+	m := l.li.Len()
 	if m % 2 == 0 {
 		return m/2
 	} else {
@@ -38,7 +39,7 @@ func (l *leaf) add (key int, value interface{}) (bool, int, node) {
 		return false, 0, nil
 	}
 
-	if l.li.Len() >= m {
+	if l.li.Len() > maxElementsCount {
 		center, newLeaf := l.divide(key, value)
 		return true, center, newLeaf
 	}
