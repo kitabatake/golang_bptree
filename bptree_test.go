@@ -17,27 +17,27 @@ func TestMain(m *testing.M) {
 func TestCommon(t *testing.T) {
 	bpt := NewBptree()
 
-	_, ok := bpt.find(1)
+	_, ok := bpt.Find(1)
 	assert.OK(t, ok == false)
 
-	bpt.add(1, "a")
-	ret, _ := bpt.find(1)
+	bpt.Add(1, "a")
+	ret, _ := bpt.Find(1)
 	assert.OK(t, ret == "a")
 
-	bpt.add(1, "aa")
-	ret, _ = bpt.find(1)
+	bpt.Add(1, "aa")
+	ret, _ = bpt.Find(1)
 	assert.OK(t, ret == "aa")
 
-	bpt.add(3, "b")
-	ret, _ = bpt.find(3)
+	bpt.Add(3, "b")
+	ret, _ = bpt.Find(3)
 	assert.OK(t, ret == "b")
 
-	bpt.add(4, "c")
-	ret, _ = bpt.find(4)
+	bpt.Add(4, "c")
+	ret, _ = bpt.Find(4)
 	assert.OK(t, ret == "c")
 
-	bpt.add(5, "d")
-	ret, _ = bpt.find(5)
+	bpt.Add(5, "d")
+	ret, _ = bpt.Find(5)
 	//bpt.dump()
 	assert.OK(t, ret == "d")
 }
@@ -45,11 +45,11 @@ func TestCommon(t *testing.T) {
 func TestExpansion(t *testing.T) {
 	bpt := NewBptree()
 	for i := 1; i <= 10; i++ {
-		bpt.add(i, i)
+		bpt.Add(i, i)
 	}
 	//bpt.dump()
 	for i := 1; i <= 10; i++ {
-		ret, _ := bpt.find(i)
+		ret, _ := bpt.Find(i)
 		assert.OK(t, ret == i)
 	}
 }
@@ -57,11 +57,23 @@ func TestExpansion(t *testing.T) {
 func TestDescendingOrderExpansion(t *testing.T) {
 	bpt := NewBptree()
 	for i := 10; i >= 1; i-- {
-		bpt.add(i, i)
+		bpt.Add(i, i)
 	}
-	bpt.dump()
 	for i := 10; i >= 1; i-- {
-		ret, _ := bpt.find(i)
+		ret, _ := bpt.Find(i)
 		assert.OK(t, ret == i)
 	}
+}
+
+func TestDeleteLeafElement(t *testing.T) {
+	bpt := NewBptree()
+	bpt.Add(1,1)
+	bpt.Add(2,2)
+	bpt.Add(4,4)
+	bpt.Add(5,4)
+
+	bpt.Delete(4)
+	_, ok := bpt.Find(4)
+	assert.OK(t, ok == false)
+	bpt.dump()
 }

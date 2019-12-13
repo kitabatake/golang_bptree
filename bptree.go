@@ -20,7 +20,7 @@ func NewBptree() *bptree {
 	return &bpt
 }
 
-func (bpt *bptree) add(key int, value interface{}) {
+func (bpt *bptree) Add(key int, value interface{}) {
 	traceBranches := make([]*branch, 0)
 	l := bpt.findLeaf(bpt.root, key, &traceBranches)
 	divided, center, newNode := l.add(key, value)
@@ -47,9 +47,14 @@ func (bpt *bptree) add(key int, value interface{}) {
 	}
 }
 
-func (bpt *bptree) find(key int) (interface{}, bool) {
+func (bpt *bptree) Find(key int) (interface{}, bool) {
 	l := bpt.findLeaf(bpt.root, key, nil)
 	return l.find(key)
+}
+
+func (bpt *bptree) Delete(key int) {
+	l := bpt.findLeaf(bpt.root, key, nil)
+	l.delete(key)
 }
 
 func (bpt *bptree) findLeaf(n node, key int, traceBranches *[]*branch) *leaf {

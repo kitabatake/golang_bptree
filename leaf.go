@@ -102,6 +102,16 @@ func (l *leaf) divide(newKey int, newValue interface{}) (int, *leaf) {
 	return keys[centerIndex], newLeaf
 }
 
+func (l *leaf) delete(key int) {
+	for e := l.li.Front(); e != nil; e = e.Next() {
+		ele := e.Value.(leafElement)
+		if ele.key == key {
+			l.li.Remove(e)
+			return
+		}
+	}
+}
+
 
 func (l *leaf) String() string {
 	out := "["
