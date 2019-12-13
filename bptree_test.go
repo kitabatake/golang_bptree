@@ -77,14 +77,28 @@ func TestDescendingOrderExpansion(t *testing.T) {
 //	assert.OK(t, ok == false)
 //}
 
-func TestDeleteAndMergeLeafs(t *testing.T) {
+//func TestDeleteAndMergeLeafs(t *testing.T) {
+//	bpt := NewBptree()
+//	for i := 8; i >= 1; i-- {
+//		bpt.Add(i, i)
+//	}
+//
+//	bpt.dump()
+//	bpt.Delete(1)
+//	bpt.dump()
+//
+//	//TODO: revers order
+//}
+
+func TestDeleteAndMergeBranches(t *testing.T) {
 	bpt := NewBptree()
-	for i := 8; i >= 1; i-- {
+	for i := 21; i >= 1; i-- {
 		bpt.Add(i, i)
 	}
 
 	bpt.dump()
-	bpt.Delete(1)
+	bpt.Delete(21)
+	bpt.Delete(20)
 	bpt.dump()
 
 	//TODO: revers order

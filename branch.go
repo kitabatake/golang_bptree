@@ -50,9 +50,9 @@ func (b *branch) add(key int, n node) (bool, int, node) {
 func (b *branch) centerIndex() int {
 	m := len(b.keys)
 	if m % 2 == 0 {
-		return m/2
+		return m/2-1
 	} else {
-		return m/2 + 1
+		return m/2
 	}
 }
 
@@ -69,7 +69,7 @@ func (b *branch) divide() (int, node) {
 	return center, newBranch
 }
 
-func (b *branch) merge(n node) {
+func (b *branch) mergeChildren(n node) {
 	var deleteKeyIndex, deleteNodeIndex int
 	var targetNode node
 	for i, _n := range b.nodes {
@@ -85,9 +85,27 @@ func (b *branch) merge(n node) {
 		}
 	}
 
-	targetNode.(*leaf).merge(n.(*leaf)) // just corresponds to only leaf
+	if targetLeaf, ok := targetNode.(*leaf); ok {
+		targetLeaf.merge(n.(*leaf))
+	} else {
+		targetNode.(*branch).merge(b.keys[deleteKeyIndex], n.(*branch))
+	}
 	b.keys = append(b.keys[:deleteKeyIndex], b.keys[deleteKeyIndex+1:]...)
 	b.nodes = append(b.nodes[:deleteNodeIndex], b.nodes[deleteNodeIndex+1:]...)
+}
+
+func (b *branch) merge(center int, targetBranch *branch) {
+	if b.keys[0] > targetBranch.keys[0] {
+		b.keys = append(targetBranch.keys, append([]int{center}, b.keys...)...)
+		b.nodes = append(targetBranch.nodes, b.nodes...)
+	} else {
+		b.keys = append(b.keys, append([]int{center}, targetBranch.keys...)...)
+		b.nodes = append(b.nodes, targetBranch.nodes...)
+	}
+}
+
+func (b *branch) wantToMerge() bool {
+	return len(b.keys) < minElementsCount
 }
 
 
