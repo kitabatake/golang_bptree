@@ -1,10 +1,14 @@
 package bptree
 
-import "fmt"
+import (
+	"fmt"
+	"sync"
+)
 
 type branch struct {
 	keys []int
 	nodes []node
+	rwLatch sync.RWMutex
 }
 
 func NewBranch(center int, l, r node) *branch {
@@ -16,6 +20,9 @@ func NewBranch(center int, l, r node) *branch {
 }
 
 func (b *branch) next(key int) node {
+	b.rwLatch.RLock()
+	defer b.rwLatch.RUnlock()
+
 	for i, k := range b.keys {
 		if key < k {
 			return b.nodes[i]
