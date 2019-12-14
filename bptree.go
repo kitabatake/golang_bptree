@@ -25,10 +25,16 @@ func NewBptree() *bptree {
 
 func (bpt *bptree) Add(key int, value interface{}) bool {
 	traceBranches := make([]*branch, 0)
-	l := bpt.findLeaf(bpt.root, key, &traceBranches)
+	l := bpt.findLeafWithWriteLatch(bpt.root, key, &traceBranches)
+
+	l.rwLatch.Lock()
+	defer l.rwLatch.Unlock()
 	added, divided, center, newNode := l.add(key, value)
 
 	if !added {
+		for _, b := range traceBranches {
+			b.rwLatch.Unlock()
+		}
 		return false
 	}
 
@@ -51,6 +57,10 @@ func (bpt *bptree) Add(key int, value interface{}) bool {
 				bpt.root = b
 			}
 		}
+	}
+
+	for _, b := range traceBranches {
+		b.rwLatch.Unlock()
 	}
 	return true
 }
