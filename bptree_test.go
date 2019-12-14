@@ -63,32 +63,35 @@ func TestDescendingOrderExpansion(t *testing.T) {
 		ret, _ := bpt.Find(i)
 		assert.OK(t, ret == i)
 	}
+
+	checkBPTreeCondition(bpt, t)
 }
 
-//func TestDeleteLeafElement(t *testing.T) {
-//	bpt := NewBptree()
-//	bpt.Add(1,1)
-//	bpt.Add(2,2)
-//	bpt.Add(4,4)
-//	bpt.Add(5,4)
-//
-//	bpt.Delete(4)
-//	_, ok := bpt.Find(4)
-//	assert.OK(t, ok == false)
-//}
+func TestDeleteLeafElement(t *testing.T) {
+	bpt := NewBptree()
+	bpt.Add(1,1)
+	bpt.Add(2,2)
+	bpt.Add(4,4)
+	bpt.Add(5,4)
 
-//func TestDeleteAndMergeLeafs(t *testing.T) {
-//	bpt := NewBptree()
-//	for i := 8; i >= 1; i-- {
-//		bpt.Add(i, i)
-//	}
-//
-//	bpt.dump()
-//	bpt.Delete(1)
-//	bpt.dump()
-//
-//	//TODO: revers order
-//}
+	bpt.Delete(4)
+	_, ok := bpt.Find(4)
+	assert.OK(t, ok == false)
+
+	checkBPTreeCondition(bpt, t)
+}
+
+func TestDeleteAndMergeLeafs(t *testing.T) {
+	bpt := NewBptree()
+	for i := 8; i >= 1; i-- {
+		bpt.Add(i, i)
+	}
+
+
+	bpt.Delete(1)
+
+	checkBPTreeCondition(bpt, t)
+}
 
 func TestDeleteAndMergeBranches(t *testing.T) {
 	bpt := NewBptree()
@@ -106,5 +109,45 @@ func TestDeleteAndMergeBranches(t *testing.T) {
 		assert.OK(t, ret == i)
 	}
 
-	//TODO: revers order
+	checkBPTreeCondition(bpt, t)
+}
+
+/**
+ * check follows conditions
+ * - each elements length between min and max
+ * - all leaf nodes level is same
+ */
+func checkBPTreeCondition(bpt *bptree, t *testing.T) {
+	qu := []node{bpt.root}
+	var isLeafLevel bool
+	for len(qu) != 0 {
+		nextQu := make([]node, 0)
+		isLeafLevel = false
+		for i, n := range qu {
+			switch n := n.(type) {
+			case *branch:
+				assert.OK(t, isLeafLevel == false)
+
+				elementsLen := len(n.keys)
+				if n != bpt.root {
+					assert.OK(t, elementsLen >= minElementsCount)
+				}
+				assert.OK(t, elementsLen <= maxElementsCount)
+				nextQu = append(nextQu, n.nodes...)
+			case *leaf:
+				if i == 0 {
+					isLeafLevel = true
+				} else {
+					assert.OK(t, isLeafLevel == true)
+				}
+
+				elementsLen := n.li.Len()
+				if n != bpt.root {
+					assert.OK(t, elementsLen >= minElementsCount)
+				}
+				assert.OK(t, elementsLen <= maxElementsCount)
+			}
+		}
+		qu = nextQu
+	}
 }

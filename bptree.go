@@ -1,6 +1,8 @@
 package bptree
 
-import "fmt"
+import (
+	"fmt"
+)
 
 var (
 	minElementsCount = 2
