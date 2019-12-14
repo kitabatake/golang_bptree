@@ -53,32 +53,25 @@ func (l *leaf) add (key int, value interface{}) (bool, bool, int, node) {
 		l.li.PushBack(ele)
 	}
 
-	if l.li.Len() > maxElementsCount {
-		center, newLeaf := l.divide(key, value)
+	if l.wantToDivide() {
+		center, newLeaf := l.divide()
 		return true, true, center, newLeaf
 	}
 
 	return true, false, 0, nil
 }
 
-func (l *leaf) divide(newKey int, newValue interface{}) (int, *leaf) {
+func (l *leaf) wantToDivide() bool {
+	return l.li.Len() > maxElementsCount
+}
+
+func (l *leaf) divide() (int, *leaf) {
 	keys := make([]int, 0)
 	values := make([]interface{}, 0)
-	added := false
 	for e := l.li.Front(); e != nil; e = e.Next() {
 		ele := e.Value.(leafElement)
-		if !added && ele.key > newKey {
-			keys = append(keys, newKey)
-			values = append(values, newValue)
-			added = true
-		}
 		keys = append(keys, ele.key)
 		values = append(values, ele.value)
-	}
-
-	if !added {
-		keys = append(keys, newKey)
-		values = append(values, newValue)
 	}
 
 	centerIndex := l.centerIndex()

@@ -102,10 +102,10 @@ func TestDeleteAndMergeBranches(t *testing.T) {
 		bpt.Add(i, i)
 	}
 
-	bpt.dump()
+	//bpt.dump()
 	bpt.Delete(21)
 	bpt.Delete(20)
-	bpt.dump()
+	//bpt.dump()
 
 	for i := 19; i >= 1; i-- {
 		ret, _ := bpt.Find(i)
@@ -115,9 +115,36 @@ func TestDeleteAndMergeBranches(t *testing.T) {
 	checkBPTreeCondition(bpt, t)
 }
 
+func TestOnDeleteLeafMergeAndDivide(t *testing.T) {
+	bpt := NewBptree()
+	for i := 1; i < 10; i+=2 {
+		bpt.Add(i, i)
+	}
+	bpt.Add(2, 2)
+	//bpt.dump()
+	bpt.Delete(9)
+	//bpt.dump()
+
+	checkBPTreeCondition(bpt, t)
+}
+
+func TestOnDeleteBramchMergeAndDivide(t *testing.T) {
+	bpt := NewBptree()
+	for i := 1; i < 50; i+=2 {
+		bpt.Add(i, i)
+	}
+	//bpt.Add(2, 2)
+	bpt.dump()
+	bpt.Delete(3)
+	bpt.Delete(5)
+	bpt.dump()
+
+	checkBPTreeCondition(bpt, t)
+}
+
 /**
  * check follows conditions
- * - each elements length between min and max
+ * - each elements length fits between min and max
  * - all leaf nodes level is same
  */
 func checkBPTreeCondition(bpt *bptree, t *testing.T) {

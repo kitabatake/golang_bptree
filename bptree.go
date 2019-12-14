@@ -72,7 +72,19 @@ func (bpt *bptree) Delete(key int) {
 			//fmt.Printf("merge! %s\n", mergeTarget)
 			mergedNode = traceBranches[i].mergeChildren(mergeTarget)
 
-			//TODO: check where mergedNode want to divide
+			// necessary divide mergedNode before merging parent branch if mergedNode want to divide
+			switch mergedNode := mergedNode.(type) {
+			case *leaf:
+				if mergedNode.wantToDivide() {
+					center, newLeaf := mergedNode.divide()
+					traceBranches[i].add(center, newLeaf)
+				}
+			case *branch:
+				if mergedNode.wantToDivide() {
+					center, newNode := mergedNode.divide()
+					traceBranches[i].add(center, newNode)
+				}
+			}
 
 			if !traceBranches[i].wantToMerge() {
 				break
@@ -80,7 +92,7 @@ func (bpt *bptree) Delete(key int) {
 			mergeTarget = traceBranches[i]
 
 			if i == 0 && len(traceBranches[i].keys) == 0 {
-				// change root is root has no elements
+				// change root if root has no elements
 				bpt.root = mergedNode
 			}
 		}

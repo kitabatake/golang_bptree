@@ -39,7 +39,7 @@ func (b *branch) add(key int, n node) (bool, int, node) {
 		b.nodes = append(b.nodes, n)
 	}
 
-	if len(b.keys) > maxElementsCount {
+	if b.wantToDivide() {
 		center, newBranch := b.divide()
 		return true, center, newBranch
 	}
@@ -54,6 +54,10 @@ func (b *branch) centerIndex() int {
 	} else {
 		return m/2
 	}
+}
+
+func (b *branch) wantToDivide() bool {
+	return len(b.keys) > maxElementsCount
 }
 
 func (b *branch) divide() (int, node) {
