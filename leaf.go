@@ -34,9 +34,9 @@ func (l *leaf) centerIndex() int {
 	}
 }
 
-func (l *leaf) add (key int, value interface{}) (bool, int, node) {
-	if l.update(key, value) {
-		return false, 0, nil
+func (l *leaf) add (key int, value interface{}) (bool, bool, int, node) {
+	if _, ok := l.find(key); ok {
+		return false, false, 0, nil
 	}
 
 	ele := leafElement{key, value}
@@ -55,22 +55,10 @@ func (l *leaf) add (key int, value interface{}) (bool, int, node) {
 
 	if l.li.Len() > maxElementsCount {
 		center, newLeaf := l.divide(key, value)
-		return true, center, newLeaf
+		return true, true, center, newLeaf
 	}
 
-	return false, 0, nil
-}
-
-func (l *leaf) update(key int, value interface{}) bool {
-	for e := l.li.Front(); e != nil; e = e.Next() {
-		ele := e.Value.(leafElement)
-
-		if ele.key == key {
-			e.Value = leafElement{key, value}
-			return true
-		}
-	}
-	return false
+	return true, false, 0, nil
 }
 
 func (l *leaf) divide(newKey int, newValue interface{}) (int, *leaf) {

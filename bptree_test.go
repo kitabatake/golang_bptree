@@ -24,9 +24,8 @@ func TestCommon(t *testing.T) {
 	ret, _ := bpt.Find(1)
 	assert.OK(t, ret == "a")
 
-	bpt.Add(1, "aa")
-	ret, _ = bpt.Find(1)
-	assert.OK(t, ret == "aa")
+	added := bpt.Add(1, "aa")
+	assert.OK(t, added == false)
 
 	bpt.Add(3, "b")
 	ret, _ = bpt.Find(3)

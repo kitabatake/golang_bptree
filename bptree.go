@@ -23,10 +23,14 @@ func NewBptree() *bptree {
 	return &bpt
 }
 
-func (bpt *bptree) Add(key int, value interface{}) {
+func (bpt *bptree) Add(key int, value interface{}) bool {
 	traceBranches := make([]*branch, 0)
 	l := bpt.findLeaf(bpt.root, key, &traceBranches)
-	divided, center, newNode := l.add(key, value)
+	added, divided, center, newNode := l.add(key, value)
+
+	if !added {
+		return false
+	}
 
 	// propagate to parent branches
 	if divided {
@@ -48,6 +52,7 @@ func (bpt *bptree) Add(key int, value interface{}) {
 			}
 		}
 	}
+	return true
 }
 
 func (bpt *bptree) Find(key int) (interface{}, bool) {
