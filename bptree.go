@@ -66,6 +66,9 @@ func (bpt *bptree) Delete(key int) {
 		for i := len(traceBranches)-1; i >= 0; i-- {
 			//fmt.Printf("merge! %s\n", mergeTarget)
 			mergedNode = traceBranches[i].mergeChildren(mergeTarget)
+
+			//TODO: check where mergedNode want to divide
+
 			if !traceBranches[i].wantToMerge() {
 				break
 			}

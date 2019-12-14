@@ -39,20 +39,25 @@ func (l *leaf) add (key int, value interface{}) (bool, int, node) {
 		return false, 0, nil
 	}
 
-	if l.li.Len() >= maxElementsCount {
-		center, newLeaf := l.divide(key, value)
-		return true, center, newLeaf
-	}
-
 	ele := leafElement{key, value}
+	inserted := false
 	for e := l.li.Front(); e != nil; e = e.Next() {
 		_ele := e.Value.(leafElement)
 		if _ele.key > ele.key {
 			l.li.InsertBefore(ele, e)
-			return false, 0, nil
+			inserted = true
+			break
 		}
 	}
-	l.li.PushBack(ele)
+	if !inserted {
+		l.li.PushBack(ele)
+	}
+
+	if l.li.Len() > maxElementsCount {
+		center, newLeaf := l.divide(key, value)
+		return true, center, newLeaf
+	}
+
 	return false, 0, nil
 }
 

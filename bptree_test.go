@@ -40,6 +40,8 @@ func TestCommon(t *testing.T) {
 	ret, _ = bpt.Find(5)
 	//bpt.dump()
 	assert.OK(t, ret == "d")
+
+	checkBPTreeCondition(bpt, t)
 }
 
 func TestExpansion(t *testing.T) {
@@ -52,6 +54,8 @@ func TestExpansion(t *testing.T) {
 		ret, _ := bpt.Find(i)
 		assert.OK(t, ret == i)
 	}
+
+	checkBPTreeCondition(bpt, t)
 }
 
 func TestDescendingOrderExpansion(t *testing.T) {
