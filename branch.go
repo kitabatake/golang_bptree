@@ -20,9 +20,6 @@ func NewBranch(center int, l, r node) *branch {
 }
 
 func (b *branch) next(key int) node {
-	b.rwLatch.RLock()
-	defer b.rwLatch.RUnlock()
-
 	for i, k := range b.keys {
 		if key < k {
 			return b.nodes[i]

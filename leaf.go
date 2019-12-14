@@ -18,9 +18,6 @@ type leafElement struct {
 }
 
 func (l *leaf) find(key int) (interface{}, bool) {
-	l.rwLatch.RLock()
-	defer l.rwLatch.RUnlock()
-
 	for e := l.li.Front(); e != nil; e = e.Next() {
 		ele := e.Value.(leafElement)
 		if ele.key == key {

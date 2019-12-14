@@ -57,19 +57,24 @@ func (bpt *bptree) Add(key int, value interface{}) bool {
 
 func (bpt *bptree) Find(key int) (interface{}, bool) {
 	l := bpt.findLeaf(bpt.root, key, nil)
+
+	l.rwLatch.RLock()
+	defer l.rwLatch.RUnlock()
 	return l.find(key)
 }
 
 func (bpt *bptree) Delete(key int) {
 	traceBranches := make([]*branch, 0)
-	l := bpt.findLeaf(bpt.root, key, &traceBranches)
+	l := bpt.findLeafWithWriteLatch(bpt.root, key, &traceBranches)
+
+	l.rwLatch.Lock()
+	defer l.rwLatch.Unlock()
 	l.delete(key)
 
 	var mergedNode node
 	if l != bpt.root && l.wantToMerge() {
 		var mergeTarget node = l
 		for i := len(traceBranches)-1; i >= 0; i-- {
-			//fmt.Printf("merge! %s\n", mergeTarget)
 			mergedNode = traceBranches[i].mergeChildren(mergeTarget)
 
 			// necessary divide mergedNode before merging parent branch if mergedNode want to divide
@@ -97,6 +102,10 @@ func (bpt *bptree) Delete(key int) {
 			}
 		}
 	}
+
+	for _, b := range traceBranches {
+		b.rwLatch.Unlock()
+	}
 }
 
 func (bpt *bptree) findLeaf(n node, key int, traceBranches *[]*branch) *leaf {
@@ -104,10 +113,26 @@ func (bpt *bptree) findLeaf(n node, key int, traceBranches *[]*branch) *leaf {
 	case *leaf:
 		return n
 	case *branch:
+		n.rwLatch.RLock()
+		defer n.rwLatch.RUnlock()
 		if traceBranches != nil {
 			*traceBranches = append(*traceBranches, n)
 		}
 		return bpt.findLeaf(n.next(key), key, traceBranches)
+	}
+	return nil
+}
+
+func (bpt *bptree) findLeafWithWriteLatch(n node, key int, traceBranches *[]*branch) *leaf {
+	switch n := n.(type) {
+	case *leaf:
+		return n
+	case *branch:
+		if traceBranches != nil {
+			*traceBranches = append(*traceBranches, n)
+		}
+		n.rwLatch.Lock()
+		return bpt.findLeafWithWriteLatch(n.next(key), key, traceBranches)
 	}
 	return nil
 }
