@@ -10,6 +10,7 @@ var (
 )
 
 type node interface {
+	isSafe() bool
 }
 
 type bptree struct {
@@ -25,7 +26,8 @@ func NewBptree() *bptree {
 
 func (bpt *bptree) Add(key int, value interface{}) bool {
 	traceBranches := make([]*branch, 0)
-	l := bpt.findLeafWithWriteLatch(bpt.root, key, &traceBranches)
+	lockedBranches := make([]*branch, 0)
+	l := bpt.findLeafWithWriteLatch(bpt.root, key, &traceBranches, &lockedBranches)
 
 	l.rwLatch.Lock()
 	defer l.rwLatch.Unlock()
@@ -59,7 +61,7 @@ func (bpt *bptree) Add(key int, value interface{}) bool {
 		}
 	}
 
-	for _, b := range traceBranches {
+	for _, b := range lockedBranches {
 		b.rwLatch.Unlock()
 	}
 	return true
@@ -75,7 +77,8 @@ func (bpt *bptree) Find(key int) (interface{}, bool) {
 
 func (bpt *bptree) Delete(key int) {
 	traceBranches := make([]*branch, 0)
-	l := bpt.findLeafWithWriteLatch(bpt.root, key, &traceBranches)
+	lockedBranches := make([]*branch, 0)
+	l := bpt.findLeafWithWriteLatch(bpt.root, key, &traceBranches, &lockedBranches)
 
 	l.rwLatch.Lock()
 	defer l.rwLatch.Unlock()
@@ -113,7 +116,7 @@ func (bpt *bptree) Delete(key int) {
 		}
 	}
 
-	for _, b := range traceBranches {
+	for _, b := range lockedBranches {
 		b.rwLatch.Unlock()
 	}
 }
@@ -134,7 +137,7 @@ func (bpt *bptree) findLeaf(n node, key int, traceBranches *[]*branch) *leaf {
 	return nil
 }
 
-func (bpt *bptree) findLeafWithWriteLatch(n node, key int, traceBranches *[]*branch) *leaf {
+func (bpt *bptree) findLeafWithWriteLatch(n node, key int, traceBranches *[]*branch, lockedBranches *[]*branch) *leaf {
 	switch n := n.(type) {
 	case *leaf:
 		return n
@@ -143,7 +146,15 @@ func (bpt *bptree) findLeafWithWriteLatch(n node, key int, traceBranches *[]*bra
 			*traceBranches = append(*traceBranches, n)
 		}
 		n.rwLatch.Lock()
-		return bpt.findLeafWithWriteLatch(n.next(key), key, traceBranches)
+		nextNode := n.next(key)
+
+		if nextNode.isSafe() {
+			n.rwLatch.Unlock()
+		} else {
+			*lockedBranches = append(*lockedBranches, n)
+		}
+
+		return bpt.findLeafWithWriteLatch(nextNode, key, traceBranches, lockedBranches)
 	}
 	return nil
 }

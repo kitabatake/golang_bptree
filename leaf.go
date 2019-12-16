@@ -116,6 +116,11 @@ func (l *leaf) merge(targetLeaf *leaf) {
 	}
 }
 
+func (l *leaf) isSafe() bool {
+	eleLen := l.li.Len()
+	return eleLen > minElementsCount && eleLen < maxElementsCount
+}
+
 func (l *leaf) String() string {
 	out := "["
 	listLen := l.li.Len()

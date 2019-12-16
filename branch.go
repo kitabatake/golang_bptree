@@ -118,6 +118,10 @@ func (b *branch) wantToMerge() bool {
 	return len(b.keys) < minElementsCount
 }
 
+func (b *branch) isSafe() bool {
+	return len(b.keys) > minElementsCount && len(b.keys) < maxElementsCount
+}
+
 
 func (b *branch) String() string {
 	out := "["
