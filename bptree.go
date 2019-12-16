@@ -124,11 +124,12 @@ func (bpt *bptree) findLeaf(n node, key int, traceBranches *[]*branch) *leaf {
 		return n
 	case *branch:
 		n.rwLatch.RLock()
-		defer n.rwLatch.RUnlock()
 		if traceBranches != nil {
 			*traceBranches = append(*traceBranches, n)
 		}
-		return bpt.findLeaf(n.next(key), key, traceBranches)
+		nextNode := n.next(key)
+		n.rwLatch.RUnlock()
+		return bpt.findLeaf(nextNode, key, traceBranches)
 	}
 	return nil
 }
